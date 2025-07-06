@@ -27,6 +27,13 @@
 	//No nobility for you, being a member of the clergy means you gave UP your nobility. It says this in many of the church tutorial texts.
 	virtue_restrictions = list(/datum/virtue/utility/noble, /datum/virtue/utility/outlander) //Local priests probably shouldn't be from Not Here, though monks and the like make sense.
 
+/datum/job/roguetown/priest/after_spawn(mob/living/L, mob/M, latejoin = TRUE)
+	..()
+	for(var/obj/structure/roguemachine/teleport_beacon/main/town_beacon in SSroguemachine.teleport_beacons)
+		var/mob/living/carbon/human/H = L
+		if(!(H.real_name in town_beacon.granted_list))
+			town_beacon.granted_list += H.real_name
+
 /datum/outfit/job/roguetown/priest/pre_equip(mob/living/carbon/human/H)
 	..()
 	neck = /obj/item/clothing/neck/roguetown/psicross/aeternus
@@ -49,7 +56,7 @@
 	ADD_TRAIT(H, TRAIT_RITUALIST, TRAIT_GENERIC)
 	ADD_TRAIT(H, TRAIT_GRAVEROBBER, TRAIT_GENERIC)
 	if(H.mind)
-		H.cmode_music = 'sound/music/combat_holy.ogg' 
+		H.cmode_music = 'sound/music/combat_holy.ogg'
 		H.mind.adjust_skillrank(/datum/skill/combat/wrestling, 5, TRUE)
 		H.mind.adjust_skillrank(/datum/skill/combat/unarmed, 5, TRUE)
 		H.mind.adjust_skillrank(/datum/skill/combat/polearms, 5, TRUE)
@@ -70,12 +77,16 @@
 		H.change_stat("speed", -1)
 	var/datum/devotion/C = new /datum/devotion(H, H.patron) // This creates the cleric holder used for devotion spells
 	C.grant_spells_priest(H)
+	if (!H.mind?.has_spell(/obj/effect/proc_holder/spell/invoked/revive)) // If not an aethernus priest, we give them Revive
+		H.mind?.AddSpell(new /obj/effect/proc_holder/spell/invoked/revive)
+	else // If aethernus priest, we give them turn undead since we are nice people.
+		if (!H.mind?.has_spell(/obj/effect/proc_holder/spell/targeted/abrogation))
+			H.mind?.AddSpell(new /obj/effect/proc_holder/spell/targeted/abrogation)
 	H.verbs += list(/mob/living/carbon/human/proc/devotionreport, /mob/living/carbon/human/proc/clericpray)
 
 	H.verbs |= /mob/living/carbon/human/proc/coronate_lord
 	H.verbs |= /mob/living/carbon/human/proc/churchexcommunicate
 	H.verbs |= /mob/living/carbon/human/proc/churchannouncement
-//	ADD_TRAIT(H, TRAIT_NOBLE, TRAIT_GENERIC)		- You are literally disinherited. Begone......
 
 
 /mob/living/carbon/human/proc/coronate_lord()
@@ -83,7 +94,7 @@
 	set category = "Priest"
 	if(!mind)
 		return
-	if(!istype(get_area(src), /area/rogue/indoors/town/church/chapel))
+	if(!istype(get_area(src), /area/provincial/indoors/town/church))
 		to_chat(src, span_warning("I need to do this in the chapel."))
 		return FALSE
 	for(var/mob/living/carbon/human/HU in get_step(src, src.dir))
@@ -125,7 +136,7 @@
 		return
 	var/inputty = input("Curse someone... (curse them again to remove it)", "Sinner Name") as text|null
 	if(inputty)
-		if(!istype(get_area(src), /area/rogue/indoors/town/church/chapel))
+		if(!istype(get_area(src), /area/provincial/indoors/town/church))
 			to_chat(src, span_warning("I need to do this from the chapel."))
 			return FALSE
 		if(inputty in GLOB.excommunicated_players)
@@ -154,7 +165,7 @@
 		return
 	var/inputty = input("Make an announcement", "ROGUETOWN") as text|null
 	if(inputty)
-		if(!istype(get_area(src), /area/rogue/indoors/town/church/chapel))
+		if(!istype(get_area(src), /area/provincial/indoors/town/church))
 			to_chat(src, span_warning("I need to do this from the chapel."))
 			return FALSE
 		priority_announce("[inputty]", title = "The Priest Speaks", sound = 'sound/misc/bell.ogg')

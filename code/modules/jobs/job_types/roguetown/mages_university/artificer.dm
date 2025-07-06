@@ -21,6 +21,13 @@
 	max_pq = null
 	round_contrib_points = 2
 
+/datum/job/roguetown/artificer/after_spawn(mob/living/L, mob/M, latejoin = TRUE)
+	. = ..()
+	for(var/obj/structure/roguemachine/teleport_beacon/main/town_beacon in SSroguemachine.teleport_beacons)
+		var/mob/living/carbon/human/H = L
+		if(!(H.real_name in town_beacon.granted_list))
+			town_beacon.granted_list += H.real_name
+
 /datum/outfit/job/roguetown/artificer/pre_equip(mob/living/carbon/human/H)
 	..()
 	if(H.mind)
@@ -57,7 +64,8 @@
 	backpack_contents = list(
 						/obj/item/rogueweapon/hammer/claw = 1,
 						/obj/item/lockpickring/mundane = 1,
-						/obj/item/clothing/cloak/apron/blacksmith = 1
+						/obj/item/clothing/cloak/apron/blacksmith = 1,
+						/obj/item/contraption/linker = 1
 						)
 	H.change_stat("strength", 1)
 	H.change_stat("intelligence", 3) //Nerd
