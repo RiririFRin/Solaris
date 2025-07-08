@@ -30,7 +30,7 @@
 	exp_light = 0
 	exp_flash = 0
 	exp_fire = 1
-	damage = 30
+	damage = 40
 	damage_type = BURN
 	npc_damage_mult = 2 // Blood and Chaos
 	accuracy = 40 // Base accuracy is lower for burn projectiles because they bypass armor
