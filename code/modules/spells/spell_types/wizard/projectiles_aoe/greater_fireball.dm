@@ -29,6 +29,6 @@
 	exp_light = 1
 	exp_flash = 2
 	exp_fire = 2
-	damage = 80 // Solaris edition, cost is lowered hence damage is lowered from AP port
+	damage = 90 // Solaris edition, cost is lowered hence damage is lowered from AP port
 	npc_damage_mult = 2 // Blood and Chaos
 	flag = "magic"
