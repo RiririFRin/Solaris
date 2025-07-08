@@ -151,15 +151,11 @@
 				if(S && H && S.clothing_flags & LAVAPROTECT && H.clothing_flags & LAVAPROTECT)
 					continue
 
-				if(C.health <= 0)
-					C.dust(drop_items = TRUE)
-
 			if("lava" in L.weather_immunities)
 				continue
 
-//			L.adjustFireLoss(50)
-			if(L) //mobs turning into object corpses could get deleted here.
-				L.adjustFireLoss(40)
+			if(L)
+				L.adjustFireLoss(100)
 				L.adjust_fire_stacks(100)
 				L.IgniteMob()
 
